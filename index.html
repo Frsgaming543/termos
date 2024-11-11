@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Terminal</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: black;
+            color: lime;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            transition: background-color 0.5s;
+        }
+
+        #terminal {
+            width: 100%;
+            height: 100%;
+            border: 2px solid lime;
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #output {
+            overflow-y: scroll;
+            height: calc(100% - 20px);
+        }
+
+        #input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #input {
+            width: calc(100% - 80px);
+            border: none;
+            background-color: black;
+            color: lime;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        #submit {
+            width: 80px;
+            height: 35px;
+            margin-left: 10px;
+            background-color: lime;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hacker-mode {
+            background-color: #000080; /* Navy Blue */
+            color: lime;
+            transition: background-color 0.5s;
+        }
+        
+        .snowflake {
+      position: fixed;
+      color: #fff;
+      font-size: 5px;
+      line-height: 1;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100vh);
+      }
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    .ball {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      border-radius: 50%;
+      animation: bounce linear infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-30px);
+      }
+      60% {
+        transform: translateY(-15px);
+      }
+    }
+    </style>
+</head>
+
+<body>
+
+    <div id="terminal" onclick="focusInput()">
+        <div id="output"></div>
+        <div id="input-container">
+            <span id="prompt">&gt; </span>
+            <input type="text" id="input" placeholder="Enter command..." onkeydown="handleInput(event)">
+            <button id="submit" onclick="submitCommand()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        function focusInput() {
+            document.getElementById('input').focus();
+        }
+
+        function handleInput(event) {
+            if (event.key === 'Enter') {
+                submitCommand();
+                event.preventDefault();
+            }
+        }
+
+        function submitCommand() {
+            var inputElement = document.getElementById('input');
+            var command = inputElement.value;
+            inputElement.value = '';
+
+            var outputElement = document.getElementById('output');
+
+            var newOutput = document.createElement('p');
+            newOutput.textContent = '> ' + command;
+            outputElement.appendChild(newOutput);
+
+            // Check if the command is "cmd hacking" and scroll to the bottom with smooth scrolling
+            if (command.toLowerCase() === 'hacking') {
+                simulateCmdHacking();
+            } else {
+                var response = executeCommand(command);
+
+                if (response !== undefined) {
+                    if (response.startsWith('image:')) {
+                        // If the response starts with 'image:', treat it as an ASCII art image
+                        var imageText = response.substring(6);
+                        var imageOutput = document.createElement('pre');
+                        imageOutput.textContent = imageText;
+                        outputElement.appendChild(imageOutput);
+                    } else {
+                        var responseOutput = document.createElement('p');
+                        responseOutput.textContent = response;
+                        outputElement.appendChild(responseOutput);
+                    }
+                }
+            }
+
+            // Set focus back to input after the command is submitted
+            focusInput();
+        }
+
+        function executeCommand(command) {
+            // Convert the command to lowercase for case-insensitive comparison
+            var lowerCaseCommand = command.toLowerCase();
+
+            // Check if the command is a color change command
+            if (lowerCaseCommand.startsWith('color')) {
+                var color = command.substring(6).trim().toLowerCase();
+
+                // Mapping colors to brighter or vibrant RGB values
+                var brightColors = {
+                    'white': '#ffffff',
+                    'black': '#ffffff',
+                    'red': '#ff7777',
+                    'green': '#77ff77',
+                    'blue': '#7777ff',
+                    'yellow': '#ffff77',
+                    'purple': '#ff77ff',
+                    'orange': '#ffa500',
+                    'pink': '#ffb6c1'
+                };
+
+                if (brightColors.hasOwnProperty(color)) {
+                    var brightColor = brightColors[color];
+                    document.getElementById('terminal').style.color = brightColor;
+                    document.getElementById('input').style.color = brightColor;
+                    return 'Text color changed to ' + brightColor;
+                } else {
+                    return 'Invalid color. Please use one of the following: white, black, red, green, blue, yellow, purple, orange, pink';
+                }
+            }
+
+            // Check if the command is "check device"
+            if (lowerCaseCommand === 'check device') {
+                var deviceInfo = navigator.userAgent;
+                return 'Device Information:\n' + deviceInfo;
+            }
+
+            // Check if the command is "hello"
+            if (lowerCaseCommand === 'hello') {
+                // ASCII art of a bear
+                return 'image: \n' +
+                    '    _____________________________\n' +
+                    '   /                            /  \n' +
+                    '  / Hello! How can I help you? /  \n' +
+                    ' /____________________________/  \n' +
+                    ' \\    \n' +
+                    '  \\    \n' +
+                    '   \\  \n' +
+                    '            ,i!!!!!!;,\n' +
+                    '       .,;i!!!!!‘`,uu,o$$bo.\n' +
+                    '      !!!!!!!‘.e$$$$$$$$$$$$$$.\n' +
+                    '     !!!!!!! $$$$$$$$$$$$$$$$$P\n' +
+                    '     !!!!!!!,`$$$$$$$$P""`,,`"\n' +
+                    '    i!!!!!!!!,$$$$",oed$$$$$$\n' +
+                    '   !!!!!!!!!‘P".,e$$$$$$$$"‘?\n' +
+                    '   `!!!!!!!! z$‘J$$$$$‘.,$bd$b,\n' +
+                    '    `!!!!!!f;$‘d$$$$$$$$$$$$$P‘,c,.\n' +
+                    '     !!!!!! $B,"?$$$$$P‘,uggg$$$$$P"\n' +
+                    '     !!!!!!.$$$$be."‘zd$$$P".,uooe$$r\n' +
+                    '     `!!!‘,$$$$$$$$$c,"",ud$$$$$$$$$L\n' +
+                    '       !! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n' +
+                    '        !‘j$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n' +
+                    '      d@@,?$$$$$$$$$$$$$$$$$$$$$$$$$$$$P\n' +
+                    '      ?@@f:$$$$$$$$$$$$$$$$$$$$$$$$$$$‘\n' +
+                    '        ""`$$$$$$$$$$$$$$$$$$$$$$$$$$F\n' +
+                    '          `3$$$$$$$$$$$$$$$$$$$$$$F`\n' +
+                    '             `"$$$$$P?$$$$$$$"`\n' +
+                    '                       `""\n';
+            }
+
+            // Check if the command is "hacker mode"
+            if (lowerCaseCommand === 'hacker mode') {
+                toggleHackerMode();
+                return 'Hacker mode activated!';
+            }
+
+            switch (lowerCaseCommand) {
+                case 'date':
+                    return 'Date: ' + new Date().toLocaleDateString();
+                case 'time':
+                    return 'Time: ' + new Date().toLocaleTimeString();
+                default:
+                    return 'Command not recognized.';
+            }
+        }
+
+        function toggleHackerMode() {
+            var bodyElement = document.body;
+            bodyElement.classList.toggle('hacker-mode');
+        }
+
+        function simulateCmdHacking() {
+            var outputElement = document.getElementById('output');
+            var hackingText = 'Executing CMD Hacking...\n\n';
+            var lines = 1000;
+
+            function addLine(index) {
+                if (index < lines) {
+                    hackingText += 'Line ' + (index + 1) + ': ' + generateRandomText() + '\n';
+                    outputElement.innerHTML = hackingText;
+
+                    // Scroll to the bottom with smooth scrolling
+                    outputElement.scrollTop = outputElement.scrollHeight;
+
+                    setTimeout(function () {
+                        addLine(index + 1);
+                    }, 10); // Adjust the delay between lines (in milliseconds)
+                } else {
+                    hackingText += '\nDate: ' + new Date().toLocaleDateString() + '\n';
+                    hackingText += 'Time: ' + new Date().toLocaleTimeString() + '\n';
+                    outputElement.innerHTML = hackingText;
+                }
+            }
+
+            addLine(0);
+        }
+
+        function generateRandomText() {
+            var characters = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/';
+            var text = '';
+
+            for (var i = 0; i < 50; i++) {
+                text += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            return text;
+        }
+        // Create snowflakes
+    for (let i = 0; i < 100; i++) {
+      createSnowflake();
+    }
+
+    // Create a random snowflake
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.innerHTML = '❄';
+      snowflake.style.left = Math.random() * window.innerWidth + 'px';
+      snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+      document.body.appendChild(snowflake);
+    }
+    </script>
+
+</body>
+</html>
